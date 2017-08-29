@@ -56,8 +56,9 @@ bot.on('message', message => {
       "\n**!kick** | Bye bye :cry:" +
       "\n**!purge <input>** | Clears messages from chat" +
       "\n**!roll** | Roll the dice!" +
-      "\n**!info <input team #>** | Gets info about a team." +
-      "\n**!skills <input team #>** | Gets skills info on team.");
+      "\n**!info <input team #>** | Gets info on a team" +
+      "\n**!skills <input team #>** | Gets skills info" +
+      "\n**!awards <input team #>** | Gets award info");
   }
 
   if (command === "heil") {
@@ -83,7 +84,7 @@ bot.on('message', message => {
   }
 
   if (command === "awards") {
-    request('http://api.vexdb.io/v1/get_awards?apikey=shNhxcphXlIXQVE2Npeu&team=' + args,
+    request('http://api.vexdb.io/v1/get_awards?team=' + args,
       function(error, response, body) {
         body = JSON.parse(body);
 
@@ -96,7 +97,7 @@ bot.on('message', message => {
               awards[award.name] = (awards[award.name] || 0) + 1;
             }
             for (var award in awards) {
-              string += '\n' + awards[award] + 'x ' + award;
+              string += '\n🏅' + awards[award] + 'x ' + award;
             }
             message.channel.sendMessage('', {
               embed: {
@@ -105,7 +106,7 @@ bot.on('message', message => {
               }
             });
           } else {
-            request('http://api.vexdb.io/v1/get_teams?apikey=shNhxcphXlIXQVE2Npeu&team=' + args,
+            request('http://api.vexdb.io/v1/get_teams?team=' + args,
               function(error, response, body) {
                 body = JSON.parse(body);
 
@@ -125,9 +126,9 @@ bot.on('message', message => {
                     embed: {
                       color: 3447003,
                       description: 'Sorry that team doesn\'t exist.',
-                      image: {
-                        url: 'https://media.giphy.com/media/Pn1gZzAY38kbm/giphy.gif'
-                      }
+                      //image: {
+                        //url: 'https://media.giphy.com/media/Pn1gZzAY38kbm/giphy.gif'
+                      //}
                     }
                   });
                 }
@@ -142,7 +143,7 @@ bot.on('message', message => {
   }
 
   if (command === "skills") {
-    request('http://api.vexdb.io/v1/get_skills?apikey=shNhxcphXlIXQVE2Npeu&season_rank=true&season=Starstruck&team=' + args,
+    request('http://api.vexdb.io/v1/get_skills?season_rank=true&season=current&team=' + args,
       function(error, response, body) {
         body = JSON.parse(body);
 
@@ -182,7 +183,7 @@ bot.on('message', message => {
               }
             });
           } else {
-            request('http://api.vexdb.io/v1/get_teams?apikey=shNhxcphXlIXQVE2Npeu&season=Starstruck&team=' + args,
+            request('http://api.vexdb.io/v1/get_teams?season=current&team=' + args,
               function(error, response, body) {
                 body = JSON.parse(body);
 
@@ -200,9 +201,9 @@ bot.on('message', message => {
                     embed: {
                       color: 3447003,
                       description: 'Sorry that team doesn\'t exist.',
-                      image: {
-                        url: 'https://media.giphy.com/media/Pn1gZzAY38kbm/giphy.gif'
-                      }
+                      //image: {
+                        //url: 'https://media.giphy.com/media/Pn1gZzAY38kbm/giphy.gif'
+                      //}
                     }
                   });
                 }
@@ -217,7 +218,7 @@ bot.on('message', message => {
   }
 
   if (command === "info") {
-    request('http://api.vexdb.io/v1/get_teams?apikey=shNhxcphXlIXQVE2Npeu&team=' + args,
+    request('http://api.vexdb.io/v1/get_teams?team=' + args,
       function(error, response, body) {
         body = JSON.parse(body);
 
@@ -245,7 +246,10 @@ bot.on('message', message => {
             message.channel.sendMessage('', {
               embed: {
                 color: 3447003,
-                description: string
+                description: string,
+                //image: {
+                  //url: 'https://maps.googleapis.com/maps/api/staticmap?center=' + team.city +','+team.region+',&zoom=13&size=600x300&maptype=roadmap&key=AIzaSyAGnvKpE4XzJuqNd_9HYa1idtVIyXw-D-M'
+                //}
               }
             });
           } else {
@@ -292,13 +296,8 @@ bot.on('message', message => {
   if (command === "ping") {
     message.channel.sendMessage('pong');
   }
-});
-
-
-bot.on('message', (message) => {
-  var args = message.content.split(/[ ]+/);
-  if (commandIs("purge", message)) {
-    if (hasRole(message.member, "Admin") || (message.member, "Mods")) {
+  if (command === "purge") {
+    if (hasRole(message.member, "Admin")) {
       if (args.length >= 3) {
         message.channel.sendMessage("You defined too many arguments. Usage:");
       } else {
@@ -317,5 +316,8 @@ bot.on('message', (message) => {
     }
   }
 });
+
+
+
 
 bot.login(config.token);
